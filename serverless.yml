@@ -1,0 +1,78 @@
+service: tg3-crud
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  stage: dev
+  region: us-east-1
+  memorySize: 256
+  timeout: 10 
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+        - dynamodb:Query
+        - dynamodb:Scan
+      Resource:
+        - arn:aws:dynamodb:us-east-1:*:table/UsersTable
+
+
+functions:
+  createUser:
+    handler: src/user.createUser
+    events:
+      - http:
+          method: post
+          path: /user
+          cors: true
+
+  updateUser:
+    handler: src/user.updateUser
+    events:
+      - http:
+          method: put
+          path: /user
+          cors: true
+
+  getUser:
+    handler: src/user.getUser
+    events:
+      - http:
+          method: get
+          path: /user/{email}
+          cors: true
+
+  fetchUsers:
+    handler: src/user.fetchUsers
+    events:
+      - http:
+          method: get
+          path: /user
+          cors: true
+          
+  deleteUsers:
+    handler: src/user.deleteUser
+    events:
+      - http:
+          method: delete
+          path: /user/{email}
+          cors: true
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: UsersTable
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 10
