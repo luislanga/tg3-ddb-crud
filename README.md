@@ -1,1 +1,1 @@
-# AWS Lambda and API Gateway API deployed with Serverless Example
+# AWS Lambda and API Gateway API CRUD deployed with Serverless Example
